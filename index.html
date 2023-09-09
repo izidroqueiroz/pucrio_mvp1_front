@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+
+    <title>TOIGET</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="title" style="display: flex; flex-direction: row; justify-content: center">
+        <h2>ToiGet - Encontre o banheiro mais próximo!!</h2>
+      </div>
+
+      <div style="display: flex; flex-direction: row; justify-content: center">
+        <div
+          id="instrucoes"
+          style="
+            width: 200px;
+            height: 380px;
+            padding-top: 10px;
+            padding-right: 10px;
+            padding-bottom: 10px;
+            padding-left: 10px;
+          "
+        >
+          <h3>Instruções:</h3>
+          <p style="text-align: justify-all">
+            Para incluir um banheiro, clique na localização dele no
+            mapa ao lado. As coordenadas geográficas (latitude e longitude)
+            serão preenchidas automaticamente nos campos abaixo.
+            Pressione o botão 'Incluir banheiro' para incluí-lo.
+          </p>
+          <p style="text-align: justify-all">
+            Para alterar um banheiro, clique em seu ícone no
+            mapa ao lado. Pressione o botão 'Alterar banheiro' para alterá-lo.
+          </p>
+          <p style="text-align: justify-all">
+            A tabela abaixo lista os banheiros em ordem crescente de distância, em relação
+            ao marcador azul. Arraste o marcador para mudar o ponto de referência. O
+            banheiro mais próximo é indicado pela cor vermelha.
+          </p>
+          <p style="text-align: justify-all">
+            Para excluir um banheiro, clique no 'x' correspondente na tabela.
+          </p>
+        </div>
+        <div
+          id="map"
+          style="
+            width: 600px;
+            height: 400px;
+            display: flex;
+            flex-direction: row;
+          "
+        ></div>
+      </div>
+    </header>
+
+    <section class="novoBanheiro">
+      <fieldset id="localizacao" 
+          style="margin-right: 5%; width: 5%;">
+        <legend>Localização</legend>
+      <div>
+        <label for="latitude" style="display: block">Latitude</label>
+        <input id="latitude" type="text" value="" name="latitude" size=7 readonly />
+      </div>
+
+      <p></p>
+
+      <div>
+        <label for="longitude" style="display: block">Longitude</label>
+        <input id="longitude" type="text" value="" name="longitude" size=7 readonly/>
+      </div>
+      </fieldset>
+
+      <div style="float: left; margin-right: 60px">
+        <fieldset>
+          <legend>Classificação</legend>
+          <div>
+            <input type="radio" id="1star" name="classificacao" value="1" />
+            <label for="1star">1 estrela</label>
+          </div>
+          <div>
+            <input type="radio" id="2star" name="classificacao" value="2" />
+            <label for="2star">2 estrelas</label>
+          </div>
+          <div>
+            <input type="radio" id="3star" name="classificacao" value="3" />
+            <label for="3star">3 estrelas</label>
+          </div>
+          <div>
+            <input type="radio" id="4star" name="classificacao" value="4" />
+            <label for="4star">4 estrelas</label>
+          </div>
+          <div>
+            <input type="radio" id="5star" name="classificacao" value="5" />
+            <label for="5star">5 estrelas</label>
+          </div>
+        </fieldset>
+      </div>
+
+      <div style="margin-right: 60px">
+        <label for="descricao" style="display: block"
+          >Descrição (opcional)</label
+        >
+        <input id="descricao" type="text" value="" name="descricao" size="60" />
+      </div>
+
+      <div>
+        <fieldset>
+          <legend>Tipo do banheiro</legend>
+          <div>
+            <input
+              type="radio"
+              id="publico"
+              name="tipoToilet"
+              value="Público"
+            />
+            <label for="publico">Público</label>
+          </div>
+          <div>
+            <input type="radio" id="pago" name="tipoToilet" value="Pago" />
+            <label for="pago">Pago</label>
+          </div>
+        </fieldset>
+      </div>
+
+    </section>
+    <section class="novoBanheiro">
+      <div style="float: left">
+        <fieldset id="horarios">
+          <legend>Horário por dia da semana</legend>
+
+          <fieldset id="segunda" style="float: left">
+            <legend>segunda-feira</legend>
+            <div>
+              <input
+                type="radio"
+                id="abertoSeg"
+                name="abertoFechadoSeg"
+                value="Aberto"
+                checked
+              />
+              <label for="abertoSeg">Aberto</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="fechadoSeg"
+                name="abertoFechadoSeg"
+                value="Fechado"
+              />
+              <label for="fechadoSeg">Fechado</label>
+            </div>
+            <div>
+              <label for="horaInicioSeg">Hora de início</label>
+              <input
+                type="time"
+                id="horaInicioSeg"
+                name="horaInicioSeg"
+                value="10:00"
+              />
+            </div>
+            <div>
+              <label for="horaFimSeg">Hora de fim</label>
+              <input
+                type="time"
+                id="horaFimSeg"
+                name="horaFimSeg"
+                value="22:00"
+              />
+            </div>
+          </fieldset>
+
+          <fieldset id="terca" style="float: left">
+            <legend>terça-feira</legend>
+            <div>
+              <input
+                type="radio"
+                id="abertoTer"
+                name="abertoFechadoTer"
+                value="Aberto"
+                checked
+              />
+              <label for="abertoTer">Aberto</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="fechadoTer"
+                name="abertoFechadoTer"
+                value="Fechado"
+              />
+              <label for="fechadoTer">Fechado</label>
+            </div>
+            <div>
+              <label for="horaInicioTer">Hora de início</label>
+              <input
+                type="time"
+                id="horaInicioTer"
+                name="horaInicioTer"
+                value="10:00"
+              />
+            </div>
+            <div>
+              <label for="horaFimTer">Hora de fim</label>
+              <input
+                type="time"
+                id="horaFimTer"
+                name="horaFimTer"
+                value="22:00"
+              />
+            </div>
+          </fieldset>
+
+          <fieldset id="quarta" style="float: left">
+            <legend>quarta-feira</legend>
+            <div>
+              <input
+                type="radio"
+                id="abertoQua"
+                name="abertoFechadoQua"
+                value="Aberto"
+                checked
+              />
+              <label for="abertoQua">Aberto</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="fechadoQua"
+                name="abertoFechadoQua"
+                value="Fechado"
+              />
+              <label for="fechadoQua">Fechado</label>
+            </div>
+            <div>
+              <label for="horaInicioQua">Hora de início</label>
+              <input
+                type="time"
+                id="horaInicioQua"
+                name="horaInicioQua"
+                value="10:00"
+              />
+            </div>
+            <div>
+              <label for="horaFimQua">Hora de fim</label>
+              <input
+                type="time"
+                id="horaFimQua"
+                name="horaFimQua"
+                value="22:00"
+              />
+            </div>
+          </fieldset>
+
+          <fieldset id="quinta" style="float: left">
+            <legend>quinta-feira</legend>
+            <div>
+              <input
+                type="radio"
+                id="abertoQui"
+                name="abertoFechadoQui"
+                value="Aberto"
+                checked
+              />
+              <label for="abertoQui">Aberto</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="fechadoQui"
+                name="abertoFechadoQui"
+                value="Fechado"
+              />
+              <label for="fechadoQui">Fechado</label>
+            </div>
+            <div>
+              <label for="horaInicioQui">Hora de início</label>
+              <input
+                type="time"
+                id="horaInicioQui"
+                name="horaInicioQui"
+                value="10:00"
+              />
+            </div>
+            <div>
+              <label for="horaFimQui">Hora de fim</label>
+              <input
+                type="time"
+                id="horaFimQui"
+                name="horaFimQui"
+                value="22:00"
+              />
+            </div>
+          </fieldset>
+
+          <fieldset id="sexta" style="float: left">
+            <legend>sexta-feira</legend>
+            <div>
+              <input
+                type="radio"
+                id="abertoSex"
+                name="abertoFechadoSex"
+                value="Aberto"
+                checked
+              />
+              <label for="abertoSex">Aberto</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="fechadoSex"
+                name="abertoFechadoSex"
+                value="Fechado"
+              />
+              <label for="fechadoSex">Fechado</label>
+            </div>
+            <div>
+              <label for="horaInicioSex">Hora de início</label>
+              <input
+                type="time"
+                id="horaInicioSex"
+                name="horaInicioSex"
+                value="10:00"
+              />
+            </div>
+            <div>
+              <label for="horaFimSex">Hora de fim</label>
+              <input
+                type="time"
+                id="horaFimSex"
+                name="horaFimSex"
+                value="22:00"
+              />
+            </div>
+          </fieldset>
+
+          <fieldset id="sabado" style="float: left">
+            <legend>sábado</legend>
+            <div>
+              <input
+                type="radio"
+                id="abertoSab"
+                name="abertoFechadoSab"
+                value="Aberto"
+                checked
+              />
+              <label for="abertoSab">Aberto</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="fechadoSab"
+                name="abertoFechadoSab"
+                value="Fechado"
+              />
+              <label for="fechadoSab">Fechado</label>
+            </div>
+            <div>
+              <label for="horaInicioSab">Hora de início</label>
+              <input
+                type="time"
+                id="horaInicioSab"
+                name="horaInicioSab"
+                value="10:00"
+              />
+            </div>
+            <div>
+              <label for="horaFimSab">Hora de fim</label>
+              <input
+                type="time"
+                id="horaFimSab"
+                name="horaFimSab"
+                value="22:00"
+              />
+            </div>
+          </fieldset>
+
+          <fieldset id="domingo" style="float: left">
+            <legend>domingo</legend>
+            <div>
+              <input
+                type="radio"
+                id="abertoDom"
+                name="abertoFechadoDom"
+                value="Aberto"
+                checked
+              />
+              <label for="abertoDom">Aberto</label>
+            </div>
+            <div>
+              <input
+                type="radio"
+                id="fechadoDom"
+                name="abertoFechadoDom"
+                value="Fechado"
+              />
+              <label for="fechadoDom">Fechado</label>
+            </div>
+            <div>
+              <label for="horaInicioDom">Hora de início</label>
+              <input
+                type="time"
+                id="horaInicioDom"
+                name="horaInicioDom"
+                value="10:00"
+              />
+            </div>
+            <div>
+              <label for="horaFimDom">Hora de fim</label>
+              <input
+                type="time"
+                id="horaFimDom"
+                name="horaFimDom"
+                value="22:00"
+              />
+            </div>
+          </fieldset>
+        </fieldset>
+      </div>
+      
+    </section>
+
+    <section style="display: flex; justify-content: center;">
+      
+      <button onclick="novoBanheiro()" class="novoBotao" id="novoBotao">
+        Incluir banheiro
+      </button>
+
+    </section>
+    
+    <!-- Tabela com banheiros existentes -->
+    <section class="toilets"> 
+      <table id="toiletTable">
+        <tr>
+          <th>Latitude</th>
+          <th>Longitude</th>
+          <th>Classificação</th>
+          <th>Descrição</th>
+          <th>Tipo Banheiro</th>
+          <th>Distância</th>
+          <th>
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/126/126468.png"
+              width="15px"
+              height="15px"
+            />
+          </th>
+        </tr>
+      </table>
+
+    </section>
+
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>
