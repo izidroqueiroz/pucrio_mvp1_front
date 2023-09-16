@@ -275,7 +275,7 @@ const atualizaDistancias = () => {
 */
 var posicaoInicial = [-23.004678325889472, -43.31867551816686];
 var map = L.map('map').setView(posicaoInicial, 14);
-map.locate({maxZoom: 20});
+map.locate({maxZoom: 20, setView: true});
 var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', 
             {maxZoom: 20,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
